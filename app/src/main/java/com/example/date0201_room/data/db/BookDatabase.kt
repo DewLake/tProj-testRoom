@@ -6,7 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.example.date0201_room.data.Book
 
-@Database(entities = [(Book::class)], exportSchema = false, version = 1)
+@Database(entities = [(Book::class)], exportSchema = false, version = 2)
 abstract class BookDatabase: RoomDatabase() {
 
     // Book DAO:
