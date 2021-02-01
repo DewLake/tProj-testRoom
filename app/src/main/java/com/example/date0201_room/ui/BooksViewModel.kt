@@ -25,15 +25,10 @@ class BooksViewModel(
     /** insert */
     fun addBook(book: Book) {
         viewModelScope.launch {
-            insert(book)
-        }
-    }
-
-    private suspend fun insert(book: Book) {
-        withContext(Dispatchers.IO){
             dataSource.insert(book)
         }
     }
+
 
     /////////////////////////////////////////////////////// ViewModel Factory:
     class BooksViewModelFactory(

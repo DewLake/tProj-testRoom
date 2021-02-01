@@ -8,17 +8,17 @@ import com.example.date0201_room.data.Book
 interface IBookDAO {
 
     @Query("SELECT * FROM ${Book.TABLE_NAME}")
-    fun getAll(): List<Book>
+    suspend fun getAll(): List<Book>
 
     @Query("SELECT * FROM ${Book.TABLE_NAME} WHERE id LIKE :id LIMIT 1")
-    fun getBookById(id: Long): Book
+    suspend fun getBookById(id: Long): Book
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(item: Book): Long
+    suspend fun insert(item: Book): Long
 
     @Update
-    fun update(item: Book): Int
+    suspend fun update(item: Book): Int
 
     @Delete
-    fun delete(item: Book): Int
+    suspend fun delete(item: Book): Int
 }

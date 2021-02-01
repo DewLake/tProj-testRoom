@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.date0201_room.R
 import com.example.date0201_room.data.Book
+import com.example.date0201_room.data.FetchRandomBook
 import com.example.date0201_room.data.db.BookDatabase
 
 class BooksFragment: Fragment(R.layout.fragment_books) {
@@ -55,11 +56,7 @@ class BooksFragment: Fragment(R.layout.fragment_books) {
         view.findViewById<Button>(R.id.btnAdd).setOnClickListener {
             Log.i(TAG, "btnAdd clicked...")
 
-            val book = Book(
-                id = null,
-                title = "title1",
-                price = 100.0
-            )
+            val book = FetchRandomBook()
 
             booksViewModel.addBook(book)
         }
