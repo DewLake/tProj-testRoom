@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import com.example.date0201_room.data.Book
 
 @Database(entities = [(Book::class)], exportSchema = false, version = 1)
-abstract class ABookDatabase: RoomDatabase() {
+abstract class BookDatabase: RoomDatabase() {
 
     // Book DAO:
     abstract fun getBookDao(): IBookDAO
@@ -20,14 +20,14 @@ abstract class ABookDatabase: RoomDatabase() {
          * provide a database
          */
         @Volatile           // 避免被快取, 直接由主記憶體存取值  // make sure the value of INSTANCE is always up-to-date and the same
-        private var INSTANCE: ABookDatabase? = null
+        private var INSTANCE: BookDatabase? = null
 
-        fun getInstance(context: Context): ABookDatabase {
+        fun getInstance(context: Context): BookDatabase {
             // makes sure the database only gets initialized once
             synchronized(this) { // only one thread of execution at a time can enter this block of code.
                 var tempInst = INSTANCE
                 if(tempInst == null) {
-                    tempInst = Room.databaseBuilder(context.applicationContext, ABookDatabase::class.java, DATABASE_NAME)
+                    tempInst = Room.databaseBuilder(context.applicationContext, BookDatabase::class.java, DATABASE_NAME)
                         .fallbackToDestructiveMigration()       // destroy and rebuild the database. (註: 資料會遺失)
                         .build()
                     // TODO(when close?)
