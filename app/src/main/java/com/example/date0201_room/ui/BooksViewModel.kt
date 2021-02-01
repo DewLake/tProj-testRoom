@@ -1,10 +1,7 @@
 package com.example.date0201_room.ui
 
 import android.app.Application
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.example.date0201_room.data.Book
 import com.example.date0201_room.data.db.BookDatabase
 import com.example.date0201_room.data.db.IBookDAO
@@ -20,6 +17,8 @@ class BooksViewModel(
     val dataSource: IBookDAO,
     application: Application
 ) : AndroidViewModel(application) {
+    //
+    val books:LiveData<List<Book>> = dataSource.getAllBooks()
 
 
     /** insert */
