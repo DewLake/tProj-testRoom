@@ -8,7 +8,9 @@ import androidx.lifecycle.viewModelScope
 import com.example.date0201_room.data.Book
 import com.example.date0201_room.data.db.BookDatabase
 import com.example.date0201_room.data.db.IBookDAO
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.lang.IllegalArgumentException
 
 /**
@@ -28,7 +30,9 @@ class BooksViewModel(
     }
 
     private suspend fun insert(book: Book) {
-        dataSource.insert(book)
+        withContext(Dispatchers.IO){
+            dataSource.insert(book)
+        }
     }
 
     /////////////////////////////////////////////////////// ViewModel Factory:
