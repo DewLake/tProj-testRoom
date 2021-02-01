@@ -25,14 +25,14 @@ abstract class ABookDatabase: RoomDatabase() {
         fun getInstance(context: Context): ABookDatabase {
             // makes sure the database only gets initialized once
             synchronized(this) { // only one thread of execution at a time can enter this block of code.
-                var inst = INSTANCE
-                if(inst == null) {
-                    inst = Room.databaseBuilder(context.applicationContext, ABookDatabase::class.java, DATABASE_NAME)
+                var tempInst = INSTANCE
+                if(tempInst == null) {
+                    tempInst = Room.databaseBuilder(context.applicationContext, ABookDatabase::class.java, DATABASE_NAME)
                         .fallbackToDestructiveMigration()       // destroy and rebuild the database. (註: 資料會遺失)
                         .build()
-                    INSTANCE = inst
+                    INSTANCE = tempInst
                 }
-                return inst
+                return tempInst
             } // end synchronized(){}.
         } // end getInstance().
 
