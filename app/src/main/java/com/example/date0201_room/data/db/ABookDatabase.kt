@@ -10,4 +10,6 @@ abstract class ABookDatabase: RoomDatabase() {
     companion object {
         const val DATABASE_NAME = "database_book"
     }
+
+    abstract fun getBookDao(): IBookDAO
 } // end class ABookDatabase.
