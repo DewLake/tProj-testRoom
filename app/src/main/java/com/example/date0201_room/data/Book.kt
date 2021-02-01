@@ -3,12 +3,11 @@ package com.example.date0201_room.data
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-const val TABLE_NAME_BOOKS = "table_books"
 
 /**
  * Book
  */
-@Entity(tableName = TABLE_NAME_BOOKS)
+@Entity(tableName = Book.TABLE_NAME)
 data class Book(
     @PrimaryKey var id: Long?,       // entity id.
     var title: String? = null,              // 書名
