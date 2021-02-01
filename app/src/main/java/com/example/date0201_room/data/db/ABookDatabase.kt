@@ -30,6 +30,7 @@ abstract class ABookDatabase: RoomDatabase() {
                     tempInst = Room.databaseBuilder(context.applicationContext, ABookDatabase::class.java, DATABASE_NAME)
                         .fallbackToDestructiveMigration()       // destroy and rebuild the database. (註: 資料會遺失)
                         .build()
+                    // TODO(when close?)
                     INSTANCE = tempInst
                 }
                 return tempInst

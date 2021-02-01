@@ -9,7 +9,7 @@ import androidx.room.PrimaryKey
  */
 @Entity(tableName = Book.TABLE_NAME)
 data class Book(
-    @PrimaryKey var id: Long?,       // entity id.
+    @PrimaryKey var id: Long? = 0,       // entity id.
     var title: String? = null,              // 書名
     var price: Double = 0.0,              // 價格
 ) {
