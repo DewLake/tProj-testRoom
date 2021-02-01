@@ -1,6 +1,8 @@
-package com.example.date0201_room.data
+package com.example.date0201_room.data.db
 
 import androidx.room.*
+import com.example.date0201_room.data.Book
+import com.example.date0201_room.data.TABLE_NAME_BOOKS
 
 @Dao
 interface IBookDAO {
