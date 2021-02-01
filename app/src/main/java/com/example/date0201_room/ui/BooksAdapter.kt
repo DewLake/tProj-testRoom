@@ -10,7 +10,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.date0201_room.R
 import com.example.date0201_room.data.Book
 
-class BookAdapter(val data: List<Book>): ListAdapter<Book, BookAdapter.ItemViewHolder>(BookDiffCallBack()) {
+class BooksAdapter(): ListAdapter<Book, BooksAdapter.ItemViewHolder>(BookDiffCallBack()) {
+    //
+    var data: List<Book>? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -20,7 +22,7 @@ class BookAdapter(val data: List<Book>): ListAdapter<Book, BookAdapter.ItemViewH
     }
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
-        holder.onBind(data[position])
+        data?.get(position)?.let { holder.onBind(it) }
     }
 
     ///////////////////////////////////////////////////////////////// ViewHolder:
