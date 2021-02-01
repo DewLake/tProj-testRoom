@@ -5,13 +5,90 @@
     android:background="#FFFFFFAA"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <!-- 編輯區 -->
     <TextView
         android:id="@+id/txvTitle__FragmentBooks"
-        android:text="some text"
+        android:text="@string/BookTitle"
         android:textSize="24sp"
+        android:layout_margin="8dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
+    <EditText
+        android:id="@+id/edtTitle__FragmentBooks"
+        app:layout_constraintStart_toEndOf="@+id/txvTitle__FragmentBooks"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/txvTitle__FragmentBooks"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:id="@+id/txvPrice__FragmentBooks"
+        android:text="@string/BookPrice"
+        android:textSize="24sp"
+        android:layout_margin="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/txvTitle__FragmentBooks"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+    <EditText
+        android:id="@+id/edtPrice__FragmentBooks"
+        app:layout_constraintStart_toEndOf="@+id/txvPrice__FragmentBooks"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/txvPrice__FragmentBooks"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"/>
+
+
+    <!-- 操作按鈕區 -->
+    <LinearLayout
+        android:id="@+id/panelButtons"
+        app:layout_constraintTop_toBottomOf="@+id/edtPrice__FragmentBooks"
+        android:orientation="horizontal"
+        android:layout_marginHorizontal="4dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/btnAdd"
+            android:text="@string/btnAdd"
+            android:layout_margin="4dp"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"/>
+        <Button
+            android:id="@+id/btnDleate"
+            android:text="@string/btnDelete"
+            android:layout_margin="4dp"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"/>
+        <Button
+            android:id="@+id/btnUpdate"
+            android:text="@string/btnUpdate"
+            android:layout_margin="4dp"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"/>
+        <Button
+            android:id="@+id/btnQuery"
+            android:text="@string/btnQuery"
+            android:layout_margin="4dp"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
+
+    <!-- 顯示清單 -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rcvBooksList"
+        android:background="#FFAABBFF"
+        app:layout_constraintTop_toBottomOf="@+id/panelButtons"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_width="0dp"
+        android:layout_height="0dp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Date0201_Room</string>
+    <string name="BookTitle">書名</string>
+    <string name="BookPrice">價格:</string>
+    <string name="btnAdd">新增</string>
+    <string name="btnDelete">刪除</string>
+    <string name="btnUpdate">修改</string>
+    <string name="btnQuery">查詢</string>
 </resources>
