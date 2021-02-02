@@ -38,6 +38,11 @@ class BooksViewModel(
         }
     }
 
+    /** select book */
+    fun select(book: Book) {
+        println("vm select: ${book.title}")
+    }
+
 
     /////////////////////////////////////////////////////// ViewModel Factory:
     class BooksViewModelFactory(

@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.EditText
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -20,13 +21,22 @@ class BooksFragment : Fragment(R.layout.fragment_books) {
     // TAG
     val TAG = "$[TAG]-${BooksFragment::class.simpleName}"
 
+    // Views
+    private lateinit var edtTitle: EditText
+    private lateinit var edtPrice: EditText
+
     // ViewModel
     lateinit var booksViewModel: BooksViewModel
 
     // BooksAdapter
-    private val booksAdapter = BooksAdapter{ book -> println("${book.title}") }
+//    private val booksAdapter = BooksAdapter{ book -> println("${book.title}") }
+    private val booksAdapter = BooksAdapter{ onItemClickCallback(it)}
 
-    // Views
+    private fun onItemClickCallback(book: Book) {
+        booksViewModel.select(book)
+        edtTitle.setText(book.title)
+        edtPrice.setText(book.price.toString())
+    }
 
 
     override fun onCreateView(
@@ -59,6 +69,11 @@ class BooksFragment : Fragment(R.layout.fragment_books) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // initialize views
+        edtTitle = view.findViewById(R.id.edtTitle__FragmentBooks)
+        edtPrice = view.findViewById(R.id.edtPrice__FragmentBooks)
+
 
         // recyclerView, books list
         val rcvBooks: RecyclerView = view.findViewById(R.id.rcvBooksList)
