@@ -1,6 +1,7 @@
 package com.example.date0201_room.ui
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.*
 import com.example.date0201_room.data.Book
 import com.example.date0201_room.data.db.BookDatabase
@@ -24,7 +25,16 @@ class BooksViewModel(
     /** insert */
     fun addBook(book: Book) {
         viewModelScope.launch {
+            Log.i("VM", "add book")
             dataSource.insert(book)
+        }
+    }
+
+    /** delete all */
+    fun deleteAllBooks() {
+        viewModelScope.launch {
+            Log.i("VM", "delete all books...")
+            dataSource.deleteAll()
         }
     }
 

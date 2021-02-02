@@ -68,6 +68,7 @@ class BooksFragment : Fragment(R.layout.fragment_books) {
         }
 
         booksViewModel.books.observe(viewLifecycleOwner, Observer {
+            Log.i("Fra", "adapter update")
             it.let { booksAdapter.data = it }
         })
 
@@ -80,6 +81,11 @@ class BooksFragment : Fragment(R.layout.fragment_books) {
             val book = FetchRandomBook()
 
             booksViewModel.addBook(book)
+        }
+        //
+        // delete all
+        view.findViewById<Button>(R.id.btnDleate).setOnClickListener {
+            booksViewModel.deleteAllBooks()
         }
         //
         // Query
