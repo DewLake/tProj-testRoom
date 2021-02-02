@@ -24,7 +24,7 @@ class BooksFragment : Fragment(R.layout.fragment_books) {
     lateinit var booksViewModel: BooksViewModel
 
     // BooksAdapter
-    private val booksAdapter = BooksAdapter()
+    private val booksAdapter = BooksAdapter{ book -> println("${book.title}") }
 
     // Views
 

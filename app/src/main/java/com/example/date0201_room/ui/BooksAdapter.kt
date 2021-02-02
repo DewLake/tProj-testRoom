@@ -10,9 +10,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.date0201_room.R
 import com.example.date0201_room.data.Book
 
-class BooksAdapter(): ListAdapter<Book, BooksAdapter.ItemViewHolder>(BookDiffCallBack()) {
+class BooksAdapter(
+        private val onItemClickCallback: (Book) -> Unit
+): ListAdapter<Book, BooksAdapter.ItemViewHolder>(BookDiffCallBack()) {
     //
-//    var data: List<Book>? = null
     var data =  listOf<Book>()
         set(value) {
             field = value
@@ -20,11 +21,13 @@ class BooksAdapter(): ListAdapter<Book, BooksAdapter.ItemViewHolder>(BookDiffCal
             this.submitList(field)
         }
 
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.list_item_book, parent, false)
 
-        return ItemViewHolder(view)
+        val holder = ItemViewHolder(view, onItemClickCallback)
+        return holder
     }
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
@@ -32,16 +35,31 @@ class BooksAdapter(): ListAdapter<Book, BooksAdapter.ItemViewHolder>(BookDiffCal
     }
 
     ///////////////////////////////////////////////////////////////// ViewHolder:
-    class ItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    class ItemViewHolder(
+            itemView: View,
+            onItemClickCallback: (Book) -> Unit
+    ) : RecyclerView.ViewHolder(itemView) {
+
+        // item data
+        var book: Book? = null
+        // Views
         val txvTitle: TextView = itemView.findViewById(R.id.txvTitle__ListItemBook)
         val txvPrice: TextView = itemView.findViewById(R.id.txvPrice__ListItemBook)
 
         fun onBind(item: Book) {
+            this.book = item
             txvTitle.text = item.title
             txvPrice.text = item.price.toString()
         }
-    }
 
+        /// Click Event Handler
+        // private val clickListener = View.OnClickListener { book?.let { onItemClickCallback.invoke(it) } }
+        private val clickListener = object : View.OnClickListener {
+            override fun onClick(view: View?) {
+                book?.let { onItemClickCallback.invoke(it) }
+            }
+        }.also { itemView.setOnClickListener(it) }
+    }
     ///////////////////////////////////////////////////////////////// ViewHolder end.
     ///////////////////////////////////////////////////////////////// DiffCallBack:
     class BookDiffCallBack : DiffUtil.ItemCallback<Book>() {
