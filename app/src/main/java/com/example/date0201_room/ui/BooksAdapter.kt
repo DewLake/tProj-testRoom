@@ -48,7 +48,7 @@ class BooksAdapter(
 
         fun onBind(item: Book) {
             this.book = item
-            txvTitle.text = item.title
+            txvTitle.text = ("${item.id} - ${item.title}")
             txvPrice.text = item.price.toString()
         }
 

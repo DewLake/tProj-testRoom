@@ -18,8 +18,17 @@ class BooksViewModel(
     val dataSource: IBookDAO,
     application: Application
 ) : AndroidViewModel(application) {
-    //
-    val books:LiveData<List<Book>> = dataSource.getAllBooks()
+
+    // TAG
+    val TAG = "[TAG]-${BooksViewModel::class.simpleName}"
+
+    // books: from Room Database; observer by listAdapter.
+    val books: LiveData<List<Book>> = dataSource.getAllBooks()
+
+    // selectedItem: set by item clicked; observer by editText, buttons.
+    private val _selectedItem: MutableLiveData<Book?> = MutableLiveData(null)
+    val selectedItem: LiveData<Book?>
+        get() = _selectedItem
 
 
     /** insert */
@@ -38,9 +47,13 @@ class BooksViewModel(
         }
     }
 
-    /** select book */
+    /**
+     * select book
+     * While list item clicked, set the selected item.
+     */
     fun select(book: Book) {
-        println("vm select: ${book.title}")
+        Log.i(TAG, "select book: $book")
+        this._selectedItem.value = book
     }
 
 

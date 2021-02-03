@@ -24,9 +24,15 @@ class BooksFragment : Fragment(R.layout.fragment_books) {
     // Views
     private lateinit var edtTitle: EditText
     private lateinit var edtPrice: EditText
+    //
+    private lateinit var btnAdd: Button
+    private lateinit var btnDelete: Button
+    private lateinit var btnUpdate: Button
+    private lateinit var btnQuery: Button
+
 
     // ViewModel
-    private lateinit var booksViewModel: BooksViewModel
+    private lateinit var viewModel: BooksViewModel
 
     // BooksAdapter
     private lateinit var booksAdapter: BooksAdapter
@@ -54,7 +60,7 @@ class BooksFragment : Fragment(R.layout.fragment_books) {
         val ds = BookDatabase.getInstance(app).getBookDao()
 
         // viewModel
-        booksViewModel = ViewModelProvider(
+        viewModel = ViewModelProvider(
             this,
             BooksViewModel.BooksViewModelFactory(ds, app)
         ).get(BooksViewModel::class.java)
@@ -64,14 +70,32 @@ class BooksFragment : Fragment(R.layout.fragment_books) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        ///// Initialize Views
+        // Initialize Views
+        initViews(view)
+
+        // Observers subscribe
+        viewModel.selectedItem.observe(viewLifecycleOwner, Observer { book ->
+            if (book != null) {
+                // set editText content with the selected book.
+                edtTitle.setText(book.title)
+                edtPrice.setText(book.price.toString())
+
+                // buttons enable state
+
+            }
+        })
+
+    } // end onViewCreated().
+
+    /** initialize Views */
+    private fun initViews(view: View) {
         edtTitle = view.findViewById(R.id.edtTitle__FragmentBooks)
         edtPrice = view.findViewById(R.id.edtPrice__FragmentBooks)
 
 
         /// RecyclerView, books list
         // adapter
-        booksAdapter = BooksAdapter{ onItemClickCallback(it)}
+        booksAdapter = BooksAdapter { onItemClickCallback(it) }
         //
         val rcvBooks: RecyclerView = view.findViewById(R.id.rcvBooksList)
         rcvBooks.apply {
@@ -79,33 +103,40 @@ class BooksFragment : Fragment(R.layout.fragment_books) {
             adapter = booksAdapter
         }
 
-        booksViewModel.books.observe(viewLifecycleOwner, Observer {
+        viewModel.books.observe(viewLifecycleOwner, Observer {
             Log.i("Fra", "adapter update")
             it.let { booksAdapter.data = it }
         })
 
 
         /// Buttons
-        // add
-        view.findViewById<Button>(R.id.btnAdd).setOnClickListener {
+        // Add
+        btnAdd = view.findViewById<Button>(R.id.btnAdd)
+        btnAdd.setOnClickListener {
             Log.i(TAG, "btnAdd clicked...")
 
             val book = FetchRandomBook()
 
-            booksViewModel.addBook(book)
+            viewModel.addBook(book)
         }
-        //
-        // delete all
-        view.findViewById<Button>(R.id.btnDleate).setOnClickListener {
-            booksViewModel.deleteAllBooks()
+
+        // Delete all
+        btnDelete = view.findViewById<Button>(R.id.btnDleate)
+        btnDelete.setOnClickListener {
+            viewModel.deleteAllBooks()
         }
-        //
+
+        // Update
+        btnUpdate = view.findViewById<Button>(R.id.btnUpdate)
+
+
         // Query
-        view.findViewById<Button>(R.id.btnQuery).setOnClickListener {
-            val books = booksViewModel.books
+        btnQuery = view.findViewById<Button>(R.id.btnQuery)
+        btnQuery.setOnClickListener {
+            val books = viewModel.books
             books.value?.let { updateBooksAdapter(it) }
         }
-    } // end onViewCreated().
+    } // end initViews()
 
 
     /**
@@ -114,9 +145,7 @@ class BooksFragment : Fragment(R.layout.fragment_books) {
      * 選定項目 - ViewModel set selectedItem
      */
     private fun onItemClickCallback(book: Book) {
-        booksViewModel.select(book)
-        edtTitle.setText(book.title)
-        edtPrice.setText(book.price.toString())
+        viewModel.select(book)
     }
 
     /**
