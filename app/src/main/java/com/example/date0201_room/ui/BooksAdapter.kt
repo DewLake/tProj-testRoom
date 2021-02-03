@@ -16,7 +16,7 @@ class BooksAdapter(
         private val onItemClickCallback: (Book) -> Unit
 ): ListAdapter<Book, BooksAdapter.ItemViewHolder>(BookDiffCallBack()) {
     //
-    var mPreviousIndex = -1;        // previous selected/clicked index.
+    private var mPreviousIndex = RecyclerView.NO_POSITION        // previous selected/clicked index.
     //
     var data =  listOf<Book>()
         set(value) {
@@ -32,18 +32,6 @@ class BooksAdapter(
 
         val holder = ItemViewHolder(view, onItemClickCallback)
 
-        /// Click Event Handler
-        // private val clickListener = View.OnClickListener { book?.let { onItemClickCallback.invoke(it) } }
-        val clickListener = object : View.OnClickListener {
-            override fun onClick(view: View?) {
-                // item 被點擊(選)時, 改變背景色
-                holder.layout.setBackgroundColor(Color.MAGENTA)
-
-                // 將 book 作為參數, 執行 Callback.
-                book?.let { onItemClickCallback.invoke(it) }
-            }
-        }.also { holder.itemView.setOnClickListener(it) }
-
         return holder
     }
 
@@ -51,11 +39,27 @@ class BooksAdapter(
         // holder bind data
         data.get(position).let { holder.onBind(it) }
 
-        // clear old item background color.
-        if (position == mPreviousIndex) {
-            holder.layout.setBackgroundColor(Color.CYAN)
-            notifyItemChanged(mPreviousIndex)
+        println("click $position, $mPreviousIndex")
+        holder.layout.setOnClickListener {
+            it.setBackgroundColor(Color.MAGENTA)
+            mPreviousIndex = position
+            notifyDataSetChanged()
         }
+
+        // coloring
+        if(mPreviousIndex == position) {
+            holder.layout.setBackgroundColor(Color.MAGENTA)
+        } else {
+            holder.layout.setBackgroundColor(Color.CYAN)
+        }
+
+
+
+        // clear old item background color.
+//        if (position == mPreviousIndex) {
+//            holder.layout.setBackgroundColor(Color.CYAN)
+//            notifyItemChanged(mPreviousIndex)
+//        }
 
         // remember the position
         mPreviousIndex = position
