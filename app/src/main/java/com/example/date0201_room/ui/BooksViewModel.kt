@@ -31,13 +31,33 @@ class BooksViewModel(
         get() = _selectedItem
 
 
+    /**
+     * select book
+     * While list item clicked, set the selected item.
+     */
+    fun select(book: Book?) {
+        Log.i(TAG, "select book: $book")
+        this._selectedItem.value = book
+    }
+
+
     /** insert */
     fun addBook(book: Book) {
         viewModelScope.launch {
-            Log.i("VM", "add book")
+            Log.i(TAG, "add book")
             dataSource.insert(book)
         }
     }
+
+
+    /** update */
+    fun update(book: Book) {
+        viewModelScope.launch {
+            Log.i(TAG, "update book: ${book.id}")
+            dataSource.update(book)
+        }
+    }
+
 
     /** delete all */
     fun deleteAllBooks() {
@@ -56,14 +76,8 @@ class BooksViewModel(
         }
     }
 
-    /**
-     * select book
-     * While list item clicked, set the selected item.
-     */
-    fun select(book: Book?) {
-        Log.i(TAG, "select book: $book")
-        this._selectedItem.value = book
-    }
+
+
 
     /////////////////////////////////////////////////////// ViewModel Factory:
     class BooksViewModelFactory(

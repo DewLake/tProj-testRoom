@@ -1,10 +1,12 @@
 package com.example.date0201_room.ui
 
+import android.app.Activity
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import androidx.fragment.app.Fragment
@@ -16,6 +18,7 @@ import com.example.date0201_room.R
 import com.example.date0201_room.data.Book
 import com.example.date0201_room.data.FetchRandomBook
 import com.example.date0201_room.data.db.BookDatabase
+
 
 class BooksFragment : Fragment(R.layout.fragment_books) {
     // TAG
@@ -40,9 +43,9 @@ class BooksFragment : Fragment(R.layout.fragment_books) {
 
     /** */
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater,
+            container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View? {
         // initialize ViewMOdel
         initViewModel()
@@ -61,8 +64,8 @@ class BooksFragment : Fragment(R.layout.fragment_books) {
 
         // viewModel
         viewModel = ViewModelProvider(
-            this,
-            BooksViewModel.BooksViewModelFactory(ds, app)
+                this,
+                BooksViewModel.BooksViewModelFactory(ds, app)
         ).get(BooksViewModel::class.java)
     } // end initViewModel().
 
@@ -76,8 +79,8 @@ class BooksFragment : Fragment(R.layout.fragment_books) {
         // Observers subscribe
         viewModel.selectedItem.observe(viewLifecycleOwner, Observer { book ->
             // EditText content
-            edtTitle.setText( book?.title ?: "" )
-            edtPrice.setText( book?.price?.toString() ?: "")
+            edtTitle.setText(book?.title ?: "")
+            edtPrice.setText(book?.price?.toString() ?: "")
 
             // Buttons enable state
             btnDelete.isEnabled = (book != null)
@@ -130,6 +133,19 @@ class BooksFragment : Fragment(R.layout.fragment_books) {
 
         // Update
         btnUpdate = view.findViewById<Button>(R.id.btnUpdate)
+        btnUpdate.setOnClickListener {
+            viewModel.selectedItem.value?.let {
+                val b = it
+                b.title = edtTitle.text.toString()
+                b.price = edtPrice.text.toString().toDouble()
+                viewModel.update(b)
+                rcvBooks.adapter?.notifyDataSetChanged()
+
+                // hide keyboard
+                val imm: InputMethodManager = requireContext().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(view.windowToken, 0)
+            }
+        }
 
 
         // Query
