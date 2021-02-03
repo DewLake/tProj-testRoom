@@ -13,7 +13,7 @@ import com.example.date0201_room.R
 import com.example.date0201_room.data.Book
 
 class BooksAdapter(
-        private val onItemClickCallback: (Book) -> Unit
+        private val onItemClickCallback: (Book?) -> Unit
 ): ListAdapter<Book, BooksAdapter.ItemViewHolder>(BookDiffCallBack()) {
     //
     private var mPreviousIndex = RecyclerView.NO_POSITION        // previous selected/clicked index.
@@ -39,13 +39,15 @@ class BooksAdapter(
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
         // bind data to holder
         data.get(position).let { holder.onBind(it) }
+
+        holder.layout.setBackgroundColor(Color.parseColor("#FFFFF0"))
     }
 
 
     ///////////////////////////////////////////////////////////////// ViewHolder:
     inner class ItemViewHolder(
             itemView: View,
-            onItemClickCallback: (Book) -> Unit
+            onItemClickCallback: (Book?) -> Unit
     ) : RecyclerView.ViewHolder(itemView) {
 
         // item data
@@ -67,17 +69,29 @@ class BooksAdapter(
         // private val clickListener = View.OnClickListener { book?.let { onItemClickCallback.invoke(it) } }
         private val clickListener = object : View.OnClickListener {
             override fun onClick(view: View?) {
-                // item 被點擊(選)時, 改變背景色
-                layout.setBackgroundColor(Color.MAGENTA)
+                //
+                val pos = this@ItemViewHolder.adapterPosition
 
-                // reset old item (background color)
-                if(mPreviousIndex != RecyclerView.NO_POSITION) { notifyItemChanged(mPreviousIndex) }
+                if(mPreviousIndex == pos) { // 同一筆被點選
+                    mPreviousIndex = RecyclerView.NO_POSITION       // 設定成未選取
+                    notifyItemChanged(pos)
 
-                // remember the new position as "previous index".
-                mPreviousIndex = this@ItemViewHolder.adapterPosition
+                    // 將 null 作為參數(沒選擇書), 執行 Callback.
+                    onItemClickCallback.invoke(null)
 
-                // 將 book 作為參數, 執行 Callback.
-                book?.let { onItemClickCallback.invoke(it) }
+                } else {
+                    // item 被點擊(選)時, 改變背景色
+                    layout.setBackgroundColor(Color.MAGENTA)
+
+                    // reset old item (background color)
+                    if(mPreviousIndex != RecyclerView.NO_POSITION) { notifyItemChanged(mPreviousIndex) }
+
+                    // remember the new position as "previous index".
+                    mPreviousIndex = pos
+
+                    // 將 book 作為參數, 執行 Callback.
+                    book?.let { onItemClickCallback.invoke(it) }
+                }
             }
         }.also { itemView.setOnClickListener(it) }
     }

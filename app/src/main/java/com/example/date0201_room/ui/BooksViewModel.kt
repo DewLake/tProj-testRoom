@@ -51,7 +51,7 @@ class BooksViewModel(
      * select book
      * While list item clicked, set the selected item.
      */
-    fun select(book: Book) {
+    fun select(book: Book?) {
         Log.i(TAG, "select book: $book")
         this._selectedItem.value = book
     }

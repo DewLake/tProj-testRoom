@@ -75,14 +75,22 @@ class BooksFragment : Fragment(R.layout.fragment_books) {
 
         // Observers subscribe
         viewModel.selectedItem.observe(viewLifecycleOwner, Observer { book ->
-            if (book != null) {
-                // set editText content with the selected book.
-                edtTitle.setText(book.title)
-                edtPrice.setText(book.price.toString())
+//            if (book == null) {
+//                // clear editText content while there is no book selected.
+//                edtTitle.text.clear()
+//                edtPrice.text.clear()
+//            } else {
+//                // set editText content with the selected book.
+//                edtTitle.setText(book.title)
+//                edtPrice.setText(book.price.toString())
+//            }
 
-                // buttons enable state
+            edtTitle.setText( book?.title ?: "" )
+            edtPrice.setText( book?.price?.toString() ?: "")
 
-            }
+            // Buttons enable state
+            btnDelete.isEnabled = (book != null)
+            btnUpdate.isEnabled = (book != null)
         })
 
     } // end onViewCreated().
@@ -144,7 +152,7 @@ class BooksFragment : Fragment(R.layout.fragment_books) {
      * Books list item 被按下時執行此方法
      * 選定項目 - ViewModel set selectedItem
      */
-    private fun onItemClickCallback(book: Book) {
+    private fun onItemClickCallback(book: Book?) {
         viewModel.select(book)
     }
 
