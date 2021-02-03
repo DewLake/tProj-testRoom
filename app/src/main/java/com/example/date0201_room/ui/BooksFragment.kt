@@ -75,16 +75,7 @@ class BooksFragment : Fragment(R.layout.fragment_books) {
 
         // Observers subscribe
         viewModel.selectedItem.observe(viewLifecycleOwner, Observer { book ->
-//            if (book == null) {
-//                // clear editText content while there is no book selected.
-//                edtTitle.text.clear()
-//                edtPrice.text.clear()
-//            } else {
-//                // set editText content with the selected book.
-//                edtTitle.setText(book.title)
-//                edtPrice.setText(book.price.toString())
-//            }
-
+            // EditText content
             edtTitle.setText( book?.title ?: "" )
             edtPrice.setText( book?.price?.toString() ?: "")
 
