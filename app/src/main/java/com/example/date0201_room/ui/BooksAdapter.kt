@@ -32,6 +32,18 @@ class BooksAdapter(
 
         val holder = ItemViewHolder(view, onItemClickCallback)
 
+        /// Click Event Handler
+        // private val clickListener = View.OnClickListener { book?.let { onItemClickCallback.invoke(it) } }
+        val clickListener = object : View.OnClickListener {
+            override fun onClick(view: View?) {
+                // item 被點擊(選)時, 改變背景色
+                holder.layout.setBackgroundColor(Color.MAGENTA)
+
+                // 將 book 作為參數, 執行 Callback.
+                book?.let { onItemClickCallback.invoke(it) }
+            }
+        }.also { holder.itemView.setOnClickListener(it) }
+
         return holder
     }
 
@@ -40,8 +52,9 @@ class BooksAdapter(
         data.get(position).let { holder.onBind(it) }
 
         // clear old item background color.
-        if (position != mPreviousIndex) {
+        if (position == mPreviousIndex) {
             holder.layout.setBackgroundColor(Color.CYAN)
+            notifyItemChanged(mPreviousIndex)
         }
 
         // remember the position
@@ -70,17 +83,17 @@ class BooksAdapter(
         }
 
 
-        /// Click Event Handler
-        // private val clickListener = View.OnClickListener { book?.let { onItemClickCallback.invoke(it) } }
-        private val clickListener = object : View.OnClickListener {
-            override fun onClick(view: View?) {
-                // item 被點擊(選)時, 改變背景色
-                layout.setBackgroundColor(Color.MAGENTA)
-
-                // 將 book 作為參數, 執行 Callback.
-                book?.let { onItemClickCallback.invoke(it) }
-            }
-        }.also { itemView.setOnClickListener(it) }
+//        /// Click Event Handler
+//        // private val clickListener = View.OnClickListener { book?.let { onItemClickCallback.invoke(it) } }
+//        private val clickListener = object : View.OnClickListener {
+//            override fun onClick(view: View?) {
+//                // item 被點擊(選)時, 改變背景色
+//                layout.setBackgroundColor(Color.MAGENTA)
+//
+//                // 將 book 作為參數, 執行 Callback.
+//                book?.let { onItemClickCallback.invoke(it) }
+//            }
+//        }.also { itemView.setOnClickListener(it) }
     }
     ///////////////////////////////////////////////////////////////// ViewHolder end.
     ///////////////////////////////////////////////////////////////// DiffCallBack:
