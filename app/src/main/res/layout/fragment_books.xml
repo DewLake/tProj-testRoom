@@ -80,11 +80,21 @@
             android:layout_height="wrap_content"/>
     </LinearLayout>
 
+    <!-- 分隔線 -->
+    <View
+        android:id="@+id/line1"
+        android:background="#000000"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/panelButtons"
+        android:layout_height="4dp"
+        android:layout_width="match_parent" />
+
     <!-- 顯示清單 -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rcvBooksList"
         android:background="#FFAABBFF"
-        app:layout_constraintTop_toBottomOf="@+id/panelButtons"
+        android:layout_margin="8dp"
+        app:layout_constraintTop_toBottomOf="@+id/line1"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
