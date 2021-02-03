@@ -42,8 +42,17 @@ class BooksViewModel(
     /** delete all */
     fun deleteAllBooks() {
         viewModelScope.launch {
-            Log.i("VM", "delete all books...")
+            Log.i(TAG, "delete all books...")
             dataSource.deleteAll()
+        }
+    }
+
+    /** delete selected item */
+    fun delete(book: Book) {
+        viewModelScope.launch {
+            Log.i(TAG, "delete book: ${book.id} ...")
+            dataSource.delete(book)
+            _selectedItem.value = null
         }
     }
 
@@ -55,7 +64,6 @@ class BooksViewModel(
         Log.i(TAG, "select book: $book")
         this._selectedItem.value = book
     }
-
 
     /////////////////////////////////////////////////////// ViewModel Factory:
     class BooksViewModelFactory(

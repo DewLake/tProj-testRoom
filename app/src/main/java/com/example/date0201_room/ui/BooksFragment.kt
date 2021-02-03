@@ -119,10 +119,13 @@ class BooksFragment : Fragment(R.layout.fragment_books) {
             viewModel.addBook(book)
         }
 
-        // Delete all
+        // Delete (selected item)
         btnDelete = view.findViewById<Button>(R.id.btnDleate)
         btnDelete.setOnClickListener {
-            viewModel.deleteAllBooks()
+//            viewModel.deleteAllBooks()
+            viewModel.selectedItem.value?.let {
+                viewModel.delete(it)
+            }
         }
 
         // Update
