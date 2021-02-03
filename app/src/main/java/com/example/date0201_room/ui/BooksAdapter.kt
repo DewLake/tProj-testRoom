@@ -1,9 +1,11 @@
 package com.example.date0201_room.ui
 
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -13,6 +15,8 @@ import com.example.date0201_room.data.Book
 class BooksAdapter(
         private val onItemClickCallback: (Book) -> Unit
 ): ListAdapter<Book, BooksAdapter.ItemViewHolder>(BookDiffCallBack()) {
+    //
+    var mPreviousIndex = -1;        // previous selected/clicked index.
     //
     var data =  listOf<Book>()
         set(value) {
@@ -27,12 +31,23 @@ class BooksAdapter(
             .inflate(R.layout.list_item_book, parent, false)
 
         val holder = ItemViewHolder(view, onItemClickCallback)
+
         return holder
     }
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
-        data?.get(position)?.let { holder.onBind(it) }
+        // holder bind data
+        data.get(position).let { holder.onBind(it) }
+
+        // clear old item background color.
+        if (position != mPreviousIndex) {
+            holder.layout.setBackgroundColor(Color.CYAN)
+        }
+
+        // remember the position
+        mPreviousIndex = position
     }
+
 
     ///////////////////////////////////////////////////////////////// ViewHolder:
     class ItemViewHolder(
@@ -41,10 +56,12 @@ class BooksAdapter(
     ) : RecyclerView.ViewHolder(itemView) {
 
         // item data
-        var book: Book? = null
+        private var book: Book? = null
+
         // Views
-        val txvTitle: TextView = itemView.findViewById(R.id.txvTitle__ListItemBook)
-        val txvPrice: TextView = itemView.findViewById(R.id.txvPrice__ListItemBook)
+        val layout: ConstraintLayout = itemView.findViewById(R.id.layout__ListItemBook)
+        private val txvTitle: TextView = itemView.findViewById(R.id.txvTitle__ListItemBook)
+        private val txvPrice: TextView = itemView.findViewById(R.id.txvPrice__ListItemBook)
 
         fun onBind(item: Book) {
             this.book = item
@@ -52,10 +69,15 @@ class BooksAdapter(
             txvPrice.text = item.price.toString()
         }
 
+
         /// Click Event Handler
         // private val clickListener = View.OnClickListener { book?.let { onItemClickCallback.invoke(it) } }
         private val clickListener = object : View.OnClickListener {
             override fun onClick(view: View?) {
+                // item 被點擊(選)時, 改變背景色
+                layout.setBackgroundColor(Color.MAGENTA)
+
+                // 將 book 作為參數, 執行 Callback.
                 book?.let { onItemClickCallback.invoke(it) }
             }
         }.also { itemView.setOnClickListener(it) }
