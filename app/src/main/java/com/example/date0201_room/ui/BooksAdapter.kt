@@ -36,37 +36,10 @@ class BooksAdapter(
     }
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
-        // holder bind data
+        // bind data to holder
         data.get(position).let { holder.onBind(it) }
 
-        holder.layout.setBackgroundColor(Color.CYAN)
-
-        holder.layout.setOnClickListener {
-            println("before click $position, $mPreviousIndex")
-            it.setBackgroundColor(Color.MAGENTA)
-            if(mPreviousIndex != RecyclerView.NO_POSITION) { notifyItemChanged(mPreviousIndex) }
-            mPreviousIndex = position
-            println("after $position, $mPreviousIndex")
-//            notifyDataSetChanged()
-        }
-
-//        // coloring
-//        if(mPreviousIndex == position) {
-//            holder.layout.setBackgroundColor(Color.MAGENTA)
-//        } else {
-//            holder.layout.setBackgroundColor(Color.CYAN)
-//        }
-
-
-
-        // clear old item background color.
-//        if (position == mPreviousIndex) {
-//            holder.layout.setBackgroundColor(Color.CYAN)
-//            notifyItemChanged(mPreviousIndex)
-//        }
-
-        // remember the position
-        mPreviousIndex = position
+        holder.layout.setBackgroundColor(Color.parseColor("#FFFFF0"))
     }
 
 
@@ -97,6 +70,11 @@ class BooksAdapter(
             override fun onClick(view: View?) {
                 // item 被點擊(選)時, 改變背景色
                 layout.setBackgroundColor(Color.MAGENTA)
+
+                // reset old item (background color)
+                if(mPreviousIndex != RecyclerView.NO_POSITION) { notifyItemChanged(mPreviousIndex) }
+
+                mPreviousIndex = this@ItemViewHolder.adapterPosition
 
                 // 將 book 作為參數, 執行 Callback.
                 book?.let { onItemClickCallback.invoke(it) }
