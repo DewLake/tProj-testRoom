@@ -26,19 +26,13 @@ class BooksFragment : Fragment(R.layout.fragment_books) {
     private lateinit var edtPrice: EditText
 
     // ViewModel
-    lateinit var booksViewModel: BooksViewModel
+    private lateinit var booksViewModel: BooksViewModel
 
     // BooksAdapter
-//    private val booksAdapter = BooksAdapter{ book -> println("${book.title}") }
-    private val booksAdapter = BooksAdapter{ onItemClickCallback(it)}
-
-    private fun onItemClickCallback(book: Book) {
-        booksViewModel.select(book)
-        edtTitle.setText(book.title)
-        edtPrice.setText(book.price.toString())
-    }
+    private lateinit var booksAdapter: BooksAdapter
 
 
+    /** */
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -70,12 +64,15 @@ class BooksFragment : Fragment(R.layout.fragment_books) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // initialize views
+        ///// Initialize Views
         edtTitle = view.findViewById(R.id.edtTitle__FragmentBooks)
         edtPrice = view.findViewById(R.id.edtPrice__FragmentBooks)
 
 
-        // recyclerView, books list
+        /// RecyclerView, books list
+        // adapter
+        booksAdapter = BooksAdapter{ onItemClickCallback(it)}
+        //
         val rcvBooks: RecyclerView = view.findViewById(R.id.rcvBooksList)
         rcvBooks.apply {
             layoutManager = LinearLayoutManager(context)
@@ -88,8 +85,8 @@ class BooksFragment : Fragment(R.layout.fragment_books) {
         })
 
 
-        // buttons
-        // Add
+        /// Buttons
+        // add
         view.findViewById<Button>(R.id.btnAdd).setOnClickListener {
             Log.i(TAG, "btnAdd clicked...")
 
@@ -110,6 +107,17 @@ class BooksFragment : Fragment(R.layout.fragment_books) {
         }
     } // end onViewCreated().
 
+
+    /**
+     * onItemClickCallback
+     * Books list item 被按下時執行此方法
+     * 選定項目 - ViewModel set selectedItem
+     */
+    private fun onItemClickCallback(book: Book) {
+        booksViewModel.select(book)
+        edtTitle.setText(book.title)
+        edtPrice.setText(book.price.toString())
+    }
 
     /**
      *
