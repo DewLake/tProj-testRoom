@@ -39,19 +39,23 @@ class BooksAdapter(
         // holder bind data
         data.get(position).let { holder.onBind(it) }
 
-        println("click $position, $mPreviousIndex")
+        holder.layout.setBackgroundColor(Color.CYAN)
+
         holder.layout.setOnClickListener {
+            println("before click $position, $mPreviousIndex")
             it.setBackgroundColor(Color.MAGENTA)
+            if(mPreviousIndex != RecyclerView.NO_POSITION) { notifyItemChanged(mPreviousIndex) }
             mPreviousIndex = position
-            notifyDataSetChanged()
+            println("after $position, $mPreviousIndex")
+//            notifyDataSetChanged()
         }
 
-        // coloring
-        if(mPreviousIndex == position) {
-            holder.layout.setBackgroundColor(Color.MAGENTA)
-        } else {
-            holder.layout.setBackgroundColor(Color.CYAN)
-        }
+//        // coloring
+//        if(mPreviousIndex == position) {
+//            holder.layout.setBackgroundColor(Color.MAGENTA)
+//        } else {
+//            holder.layout.setBackgroundColor(Color.CYAN)
+//        }
 
 
 
@@ -67,7 +71,7 @@ class BooksAdapter(
 
 
     ///////////////////////////////////////////////////////////////// ViewHolder:
-    class ItemViewHolder(
+    inner class ItemViewHolder(
             itemView: View,
             onItemClickCallback: (Book) -> Unit
     ) : RecyclerView.ViewHolder(itemView) {
@@ -87,17 +91,17 @@ class BooksAdapter(
         }
 
 
-//        /// Click Event Handler
-//        // private val clickListener = View.OnClickListener { book?.let { onItemClickCallback.invoke(it) } }
-//        private val clickListener = object : View.OnClickListener {
-//            override fun onClick(view: View?) {
-//                // item 被點擊(選)時, 改變背景色
-//                layout.setBackgroundColor(Color.MAGENTA)
-//
-//                // 將 book 作為參數, 執行 Callback.
-//                book?.let { onItemClickCallback.invoke(it) }
-//            }
-//        }.also { itemView.setOnClickListener(it) }
+        /// Click Event Handler
+        // private val clickListener = View.OnClickListener { book?.let { onItemClickCallback.invoke(it) } }
+        private val clickListener = object : View.OnClickListener {
+            override fun onClick(view: View?) {
+                // item 被點擊(選)時, 改變背景色
+                layout.setBackgroundColor(Color.MAGENTA)
+
+                // 將 book 作為參數, 執行 Callback.
+                book?.let { onItemClickCallback.invoke(it) }
+            }
+        }.also { itemView.setOnClickListener(it) }
     }
     ///////////////////////////////////////////////////////////////// ViewHolder end.
     ///////////////////////////////////////////////////////////////// DiffCallBack:
