@@ -23,6 +23,7 @@ class BooksAdapter(
             field = value
             // notifyDataSetChanged()
             this.submitList(field)
+            mPreviousIndex = RecyclerView.NO_POSITION
         }
 
 
@@ -38,8 +39,6 @@ class BooksAdapter(
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
         // bind data to holder
         data.get(position).let { holder.onBind(it) }
-
-        holder.layout.setBackgroundColor(Color.parseColor("#FFFFF0"))
     }
 
 
@@ -74,6 +73,7 @@ class BooksAdapter(
                 // reset old item (background color)
                 if(mPreviousIndex != RecyclerView.NO_POSITION) { notifyItemChanged(mPreviousIndex) }
 
+                // remember the new position as "previous index".
                 mPreviousIndex = this@ItemViewHolder.adapterPosition
 
                 // 將 book 作為參數, 執行 Callback.
