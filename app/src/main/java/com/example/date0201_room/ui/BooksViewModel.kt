@@ -23,7 +23,10 @@ class BooksViewModel(
     val TAG = "[TAG]-${BooksViewModel::class.simpleName}"
 
     // books: from Room Database; observer by listAdapter.
-    val books: LiveData<List<Book>> = dataSource.getAllBooks()
+//    val books: LiveData<List<Book>> = dataSource.getAllBooks()
+    private val _books: MutableLiveData<List<Book>> = dataSource.getAllBooks()
+    val books: LiveData<List<Book>>
+        get() = _books
 
     // selectedItem: set by item clicked; observer by editText, buttons.
     private val _selectedItem: MutableLiveData<Book?> = MutableLiveData(null)

@@ -139,7 +139,8 @@ class BooksFragment : Fragment(R.layout.fragment_books) {
                 b.title = edtTitle.text.toString()
                 b.price = edtPrice.text.toString().toDouble()
                 viewModel.update(b)
-                (rcvBooks.adapter as BooksAdapter).data = viewModel.books.value?.toList()!!
+//                (rcvBooks.adapter as BooksAdapter).data = viewModel.books.value?.toList()!!
+//                viewModel.books.value = viewModel.books.value?.toList()
 
                 // hide keyboard
                 val imm: InputMethodManager = requireContext().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
