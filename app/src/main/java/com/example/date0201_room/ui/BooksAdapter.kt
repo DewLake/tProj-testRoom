@@ -1,6 +1,7 @@
 package com.example.date0201_room.ui
 
 import android.graphics.Color
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -37,6 +38,7 @@ class BooksAdapter(
     }
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
+        Log.i("Adapter", "onBindViewHolder")
         // bind data to holder
         data.get(position).let { holder.onBind(it) }
 
