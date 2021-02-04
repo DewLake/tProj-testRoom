@@ -73,6 +73,7 @@ class BooksViewModel(
         viewModelScope.launch {
             Log.i(TAG, "update book: ${book.id}")
             dataSource.update(book)
+            resetSelectedItem()
         }
     }
 
