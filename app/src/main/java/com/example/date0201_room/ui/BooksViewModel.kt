@@ -29,7 +29,7 @@ class BooksViewModel(
 
     // select item position at adapter; used by UpdateButton OnClick.
     // source from Adapter.ViewHolder Callback invoke.
-    var selectedItemPosition: Int = -1;
+    var selectedItemPosition: Int = RecyclerView.NO_POSITION;
 
     // selectedItem: set by item clicked; observer by editText, buttons.
     private var _selectedItem: MutableLiveData<Book?> = MutableLiveData(null)
@@ -82,6 +82,7 @@ class BooksViewModel(
         viewModelScope.launch {
             Log.i(TAG, "delete all books...")
             dataSource.deleteAll()
+            resetSelectedItem()
         }
     }
 
@@ -90,15 +91,21 @@ class BooksViewModel(
         viewModelScope.launch {
             Log.i(TAG, "delete book: ${book.id} ...")
             dataSource.delete(book)
-            _selectedItem.value = null
+            resetSelectedItem()
         }
+    }
+
+    /** reset selected item */
+    private fun resetSelectedItem() {
+        selectedItemPosition = RecyclerView.NO_POSITION
+        _selectedItem.value = null
     }
 
 
     /////////////////////////////////////////////////////// ViewModel Factory:
     class BooksViewModelFactory(
-        private val dataSource: IBookDAO,
-        private val application: Application
+            private val dataSource: IBookDAO,
+            private val application: Application
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
