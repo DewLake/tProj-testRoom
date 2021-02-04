@@ -2,7 +2,9 @@ package com.example.date0201_room.ui
 
 import android.app.Application
 import android.util.Log
+import androidx.arch.core.util.Function
 import androidx.lifecycle.*
+import androidx.recyclerview.widget.RecyclerView
 import com.example.date0201_room.data.Book
 import com.example.date0201_room.data.db.BookDatabase
 import com.example.date0201_room.data.db.IBookDAO
@@ -23,13 +25,14 @@ class BooksViewModel(
     val TAG = "[TAG]-${BooksViewModel::class.simpleName}"
 
     // books: from Room Database; observer by listAdapter.
-//    val books: LiveData<List<Book>> = dataSource.getAllBooks()
-//    private val _books: MutableLiveData<List<Book>> = dataSource.getAllBooks()
     val books: LiveData<List<Book>> = dataSource.getAllBooks()
-//        get() = _books
+
+    // select item position at adapter; used by UpdateButton OnClick.
+    // source from Adapter.ViewHolder Callback invoke.
+    var selectedItemPosition: Int = -1;
 
     // selectedItem: set by item clicked; observer by editText, buttons.
-    private val _selectedItem: MutableLiveData<Book?> = MutableLiveData(null)
+    private var _selectedItem: MutableLiveData<Book?> = MutableLiveData(null)
     val selectedItem: LiveData<Book?>
         get() = _selectedItem
 
@@ -37,10 +40,22 @@ class BooksViewModel(
     /**
      * select book
      * While list item clicked, set the selected item.
+     *
+     *     @Deprecated("Use the alternative selectBookByPosition(position: Int) method.")
      */
     fun select(book: Book?) {
         Log.i(TAG, "select book: $book")
         this._selectedItem.value = book
+    }
+
+    /**
+     * select book
+     * While list item clicked, set the selected item.
+     */
+    fun selectBookByPosition(position: Int) {
+        Log.i(TAG, "select position: $position")
+        this.selectedItemPosition = position        // remember the position, used by UpdateButton OnClick.
+        this._selectedItem.value = books.value?.get(position)
     }
 
 
@@ -78,8 +93,6 @@ class BooksViewModel(
             _selectedItem.value = null
         }
     }
-
-
 
 
     /////////////////////////////////////////////////////// ViewModel Factory:

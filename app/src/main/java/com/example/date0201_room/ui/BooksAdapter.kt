@@ -14,7 +14,7 @@ import com.example.date0201_room.R
 import com.example.date0201_room.data.Book
 
 class BooksAdapter(
-        private val onItemClickCallback: (Book?) -> Unit
+        private val onItemClickCallback: (Int) -> Unit
 ): ListAdapter<Book, BooksAdapter.ItemViewHolder>(BookDiffCallBack()) {
     //
     private var mPreviousIndex = RecyclerView.NO_POSITION        // previous selected/clicked index.
@@ -49,7 +49,7 @@ class BooksAdapter(
     ///////////////////////////////////////////////////////////////// ViewHolder:
     inner class ItemViewHolder(
             itemView: View,
-            onItemClickCallback: (Book?) -> Unit
+            onItemClickCallback: (Int) -> Unit
     ) : RecyclerView.ViewHolder(itemView) {
 
         // item data
@@ -72,28 +72,34 @@ class BooksAdapter(
         private val clickListener = object : View.OnClickListener {
             override fun onClick(view: View?) {
                 //
-                val pos = this@ItemViewHolder.adapterPosition
+                val pos = this@ItemViewHolder.adapterPosition       // 取得 position
 
-                if(mPreviousIndex == pos) { // 同一筆被點選
+                // 點擊(選)一項 item 時
+                if (mPreviousIndex == pos) { // 同一筆被點選
                     mPreviousIndex = RecyclerView.NO_POSITION       // 設定成未選取
                     notifyItemChanged(pos)
 
                     // 將 null 作為參數(沒選擇書), 執行 Callback.
-                    onItemClickCallback.invoke(null)
+//                    onItemClickCallback.invoke(null)
 
-                } else {
+                } else { // 不同筆被點選時
                     // item 被點擊(選)時, 改變背景色
                     layout.setBackgroundColor(Color.MAGENTA)
 
                     // reset old item (background color)
-                    if(mPreviousIndex != RecyclerView.NO_POSITION) { notifyItemChanged(mPreviousIndex) }
+                    if (mPreviousIndex != RecyclerView.NO_POSITION) {
+                        notifyItemChanged(mPreviousIndex)
+                    }
 
                     // remember the new position as "previous index".
                     mPreviousIndex = pos
 
-                    // 將 book 作為參數, 執行 Callback.
-                    book?.let { onItemClickCallback.invoke(it) }
+//                    // 將 book 作為參數, 執行 Callback.
+//                    book?.let { onItemClickCallback.invoke(it) }
                 }
+
+                // 將 pos 作為參數, 執行 Callback.
+                onItemClickCallback.invoke(pos)
             }
         }.also { itemView.setOnClickListener(it) }
     }
