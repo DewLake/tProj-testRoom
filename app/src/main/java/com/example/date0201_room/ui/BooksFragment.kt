@@ -141,6 +141,7 @@ class BooksFragment : Fragment(R.layout.fragment_books) {
                 viewModel.update(b)
 //                (rcvBooks.adapter as BooksAdapter).data = viewModel.books.value?.toList()!!
 //                viewModel.books.value = viewModel.books.value?.toList()
+                rcvBooks.adapter?.notifyDataSetChanged()
 
                 // hide keyboard
                 val imm: InputMethodManager = requireContext().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
