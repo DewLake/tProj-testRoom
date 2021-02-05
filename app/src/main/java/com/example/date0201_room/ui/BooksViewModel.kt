@@ -1,24 +1,21 @@
 package com.example.date0201_room.ui
 
 import android.app.Application
+import android.provider.ContactsContract.CommonDataKinds.Note
 import android.util.Log
-import androidx.arch.core.util.Function
 import androidx.lifecycle.*
 import androidx.recyclerview.widget.RecyclerView
 import com.example.date0201_room.data.Book
-import com.example.date0201_room.data.db.BookDatabase
 import com.example.date0201_room.data.db.IBookDAO
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.lang.IllegalArgumentException
+
 
 /**
  * ViewModel for BooksFragment.
  */
 class BooksViewModel(
-    val dataSource: IBookDAO,
-    application: Application
+        val dataSource: IBookDAO,
+        application: Application
 ) : AndroidViewModel(application) {
 
     // TAG
@@ -26,7 +23,16 @@ class BooksViewModel(
 
     // books: from Room Database; observer by listAdapter.
 //    val books: LiveData<List<Book>> = dataSource.getAllBooks()
-    val books: LiveData<List<Book>> = dataSource.getBooks()
+    private var _books: MutableLiveData<List<Book>> = MutableLiveData()
+
+    init {
+        Thread {
+            _books.postValue(dataSource.getBooks())
+        }.start()
+    }
+
+    val books: LiveData<List<Book>>
+        get() = _books
 
     // select item position at adapter; used by UpdateButton OnClick.
     // source from Adapter.ViewHolder Callback invoke.

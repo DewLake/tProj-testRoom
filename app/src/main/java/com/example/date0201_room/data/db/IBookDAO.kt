@@ -13,7 +13,7 @@ interface IBookDAO {
     fun getAllBooks(): LiveData<List<Book>>
 
     @Query("SELECT * FROM table_books WHERE (:title IS NULL OR title Like '%' || :title || '%') OR (:price IS NULL OR price = :price) ORDER By id DESC ")
-    fun getBooks(title: String? = null, price: Double? = null): LiveData<List<Book>>
+    fun getBooks(title: String? = null, price: Double? = null): List<Book>
 
     @Query("SELECT * FROM ${Book.TABLE_NAME} WHERE id LIKE :id LIMIT 1")
     suspend fun getBookById(id: Long): Book
