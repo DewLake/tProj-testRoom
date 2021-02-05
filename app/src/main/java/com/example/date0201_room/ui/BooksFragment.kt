@@ -10,7 +10,6 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -83,12 +82,6 @@ class BooksFragment : Fragment(R.layout.fragment_books) {
         initViews(view)
 
         // Observers subscribe
-        //
-        viewModel.selectedItemPosition.observe(viewLifecycleOwner, Observer { pos ->
-            rcvBooks.adapter?.notifyItemChanged(pos)
-        })
-
-        //
         viewModel.selectedItem.observe(viewLifecycleOwner, Observer { book ->
             // EditText content
             edtTitle.setText(book?.title ?: "")
@@ -97,7 +90,6 @@ class BooksFragment : Fragment(R.layout.fragment_books) {
             // Buttons enable state
             btnDelete.isEnabled = (book != null)
             btnUpdate.isEnabled = (book != null)
-            btnAdd.isEnabled = (book == null)
         })
 
     } // end onViewCreated().
@@ -147,21 +139,15 @@ class BooksFragment : Fragment(R.layout.fragment_books) {
         // Update
         btnUpdate = view.findViewById<Button>(R.id.btnUpdate)
         btnUpdate.setOnClickListener {
-            viewModel.selectedItem.value?.let { book ->
-
-                // get user input for update the selected book.
-                val (title: String?, price: Double?) = grabUserInput()
-                Log.i(TAG, "Query title: $title, price: $price")
-
-                // update book
-                book.title = title
-                book.price = price ?: 0.0
-                viewModel.update(book)
-
+            viewModel.selectedItem.value?.let {
+                val b = it
+                b.title = edtTitle.text.toString()
+                b.price = edtPrice.text.toString().toDouble()
+                viewModel.update(b)
 //                (rcvBooks.adapter as BooksAdapter).data = viewModel.books.value?.toList()!!
 //                viewModel.books.value = viewModel.books.value?.toList()
 //                rcvBooks.adapter?.notifyDataSetChanged()
-//                rcvBooks.adapter?.notifyItemChanged(viewModel.selectedItemPosition)     // move to observe.
+                rcvBooks.adapter?.notifyItemChanged(viewModel.selectedItemPosition)
 
                 // hide keyboard
                 hideKeyboard(view)
@@ -173,29 +159,22 @@ class BooksFragment : Fragment(R.layout.fragment_books) {
         btnQuery = view.findViewById<Button>(R.id.btnQuery)
         btnQuery.setOnClickListener {
 //            val books = viewModel.books
-
-            val (title: String?, price: Double?) = grabUserInput()
+            val title: String? = edtTitle.text.toString().trim()
+            val p = edtPrice.text.toString()
+            val price: Double? = if (p.isNullOrEmpty()) {
+                null
+            } else {
+                p.toDouble()
+            }
             Log.i(TAG, "Query title: $title, price: $price")
 
-            viewModel.searchBooks(title, price)
+            val books = viewModel.getBooks(title, price)
             viewModel.books.value?.let { it1 -> updateBooksAdapter(it1) }
 
             // hide keyboard
             hideKeyboard(view)
         }
     } // end initViews()
-
-    /** generate query condition from user input */
-    private fun grabUserInput(): Pair<String?, Double?> {
-        val title: String = edtTitle.text.toString().trim()
-        val p = edtPrice.text.toString()
-        val price: Double? = if (p.isNullOrEmpty()) {
-            null
-        } else {
-            p.toDouble()
-        }
-        return Pair(title, price)
-    }
 
     /** hide keyboard */
     private fun hideKeyboard(view: View) {
