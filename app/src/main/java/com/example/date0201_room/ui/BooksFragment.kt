@@ -145,8 +145,7 @@ class BooksFragment : Fragment(R.layout.fragment_books) {
                 rcvBooks.adapter?.notifyItemChanged(viewModel.selectedItemPosition)
 
                 // hide keyboard
-                val imm: InputMethodManager = requireContext().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-                imm.hideSoftInputFromWindow(view.windowToken, 0)
+                hideKeyboard(view)
             }
         }
 
@@ -165,9 +164,18 @@ class BooksFragment : Fragment(R.layout.fragment_books) {
             Log.i(TAG, "Query title: $title, price: $price")
 
             val books = viewModel.getBooks(title, price)
-            updateBooksAdapter(books)
+            viewModel.books.value?.let { it1 -> updateBooksAdapter(it1) }
+
+            // hide keyboard
+            hideKeyboard(view)
         }
     } // end initViews()
+
+    /** hide keyboard */
+    private fun hideKeyboard(view: View) {
+        val imm: InputMethodManager = requireContext().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(view.windowToken, 0)
+    }
 
 
     /**

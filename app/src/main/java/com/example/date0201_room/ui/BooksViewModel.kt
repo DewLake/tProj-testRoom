@@ -109,9 +109,11 @@ class BooksViewModel(
         _selectedItem.value = null
     }
 
-    fun getBooks(title: String?, price: Double?): List<Book> {
-        val books = dataSource.getBooks(title, price)
-        return books
+    fun getBooks(title: String?, price: Double?): Unit {
+        Thread {
+            _books.postValue(dataSource.getBooks(title, price))
+            Log.i(TAG, "getBooks: ${books.value}")
+        }.start()
     }
 
 
