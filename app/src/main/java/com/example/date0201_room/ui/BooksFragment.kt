@@ -26,13 +26,18 @@ class BooksFragment : Fragment(R.layout.fragment_books) {
     val TAG = "$[TAG]-${BooksFragment::class.simpleName}"
 
     // Views
+    // Texts
     private lateinit var edtTitle: EditText
     private lateinit var edtPrice: EditText
-    //
+
+    // Buttons
     private lateinit var btnAdd: Button
     private lateinit var btnDelete: Button
     private lateinit var btnUpdate: Button
     private lateinit var btnQuery: Button
+
+    // RecyclerView
+    private lateinit var rcvBooks: RecyclerView
 
 
     // ViewModel
@@ -79,6 +84,9 @@ class BooksFragment : Fragment(R.layout.fragment_books) {
 
         // Observers subscribe
         //
+        viewModel.selectedItemPosition.observe(viewLifecycleOwner, Observer { pos ->
+            rcvBooks.adapter?.notifyItemChanged(pos)
+        })
 
         //
         viewModel.selectedItem.observe(viewLifecycleOwner, Observer { book ->
@@ -104,7 +112,7 @@ class BooksFragment : Fragment(R.layout.fragment_books) {
         // adapter
         booksAdapter = BooksAdapter { onItemClickCallback(it) }
         //
-        val rcvBooks: RecyclerView = view.findViewById(R.id.rcvBooksList)
+        rcvBooks = view.findViewById(R.id.rcvBooksList)
         rcvBooks.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = booksAdapter

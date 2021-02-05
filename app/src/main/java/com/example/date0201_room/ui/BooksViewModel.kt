@@ -36,8 +36,8 @@ class BooksViewModel(
 
     // select item position at adapter; used by UpdateButton OnClick.
     // source from Adapter.ViewHolder Callback invoke.
-    private var _selectedItemPosition: Int = RecyclerView.NO_POSITION;
-    val selectedItemPosition: Int
+    private var _selectedItemPosition: MutableLiveData<Int> = MutableLiveData(RecyclerView.NO_POSITION)
+    val selectedItemPosition: LiveData<Int>
         get() = _selectedItemPosition
 
     // selectedItem: set by item clicked; observer by editText, buttons.
@@ -63,7 +63,7 @@ class BooksViewModel(
      */
     fun selectBookByPosition(position: Int) {
         Log.i(TAG, "select position: $position")
-        this._selectedItemPosition = position        // remember the position, used by UpdateButton OnClick.
+        this._selectedItemPosition.value = position        // remember the position, used by UpdateButton OnClick.
         this._selectedItem.value = books.value?.get(position)
     }
 
@@ -118,7 +118,7 @@ class BooksViewModel(
 
     /** reset selected item */
     private fun resetSelectedItem() {
-        _selectedItemPosition = RecyclerView.NO_POSITION
+        _selectedItemPosition.value = RecyclerView.NO_POSITION
         _selectedItem.value = null
     }
 
