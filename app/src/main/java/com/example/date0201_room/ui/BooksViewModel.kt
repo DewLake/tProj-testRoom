@@ -110,7 +110,7 @@ class BooksViewModel(
         _selectedItem.value = null
     }
 
-    fun getBooks(title: String?, price: Double?): Unit {
+    fun searchBooks(title: String?, price: Double?): Unit {
         Thread {
             _books.postValue(dataSource.getBooks(title, price))
             Log.i(TAG, "getBooks: ${books.value}")

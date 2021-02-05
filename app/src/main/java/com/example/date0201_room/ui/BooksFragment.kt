@@ -139,11 +139,15 @@ class BooksFragment : Fragment(R.layout.fragment_books) {
         // Update
         btnUpdate = view.findViewById<Button>(R.id.btnUpdate)
         btnUpdate.setOnClickListener {
-            viewModel.selectedItem.value?.let {
-                val b = it
-                b.title = edtTitle.text.toString()
-                b.price = edtPrice.text.toString().toDouble()
-                viewModel.update(b)
+            viewModel.selectedItem.value?.let { book ->
+
+                // get user input
+                val (title: String, price: Double?) = grabUserInput()
+                book.title = title
+                book.price = price ?: 0.0
+
+                // update book
+                viewModel.update(book)
 //                (rcvBooks.adapter as BooksAdapter).data = viewModel.books.value?.toList()!!
 //                viewModel.books.value = viewModel.books.value?.toList()
 //                rcvBooks.adapter?.notifyDataSetChanged()
@@ -159,22 +163,28 @@ class BooksFragment : Fragment(R.layout.fragment_books) {
         btnQuery = view.findViewById<Button>(R.id.btnQuery)
         btnQuery.setOnClickListener {
 //            val books = viewModel.books
-            val title: String? = edtTitle.text.toString().trim()
-            val p = edtPrice.text.toString()
-            val price: Double? = if (p.isNullOrEmpty()) {
-                null
-            } else {
-                p.toDouble()
-            }
+            val (title: String?, price: Double?) = grabUserInput()
             Log.i(TAG, "Query title: $title, price: $price")
 
-            val books = viewModel.getBooks(title, price)
-            viewModel.books.value?.let { it1 -> updateBooksAdapter(it1) }
+            val books = viewModel.searchBooks(title, price)
+            viewModel.books.value?.let { books -> updateBooksAdapter(books) }
 
             // hide keyboard
             hideKeyboard(view)
         }
     } // end initViews()
+
+    /** grab user input */
+    private fun grabUserInput(): Pair<String, Double?> {
+        val title: String = edtTitle.text.toString().trim()
+        val p = edtPrice.text.toString().trim()
+        val price: Double? = if (p.isNullOrEmpty()) {
+            null
+        } else {
+            p.toDouble()
+        }
+        return Pair(title, price)
+    }
 
     /** hide keyboard */
     private fun hideKeyboard(view: View) {
