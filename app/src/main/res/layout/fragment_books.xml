@@ -34,6 +34,7 @@
         android:layout_height="wrap_content"/>
     <EditText
         android:id="@+id/edtPrice__FragmentBooks"
+        android:inputType="number"
         app:layout_constraintStart_toEndOf="@+id/txvPrice__FragmentBooks"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/txvPrice__FragmentBooks"

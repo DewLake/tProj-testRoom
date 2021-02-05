@@ -36,7 +36,9 @@ class BooksViewModel(
 
     // select item position at adapter; used by UpdateButton OnClick.
     // source from Adapter.ViewHolder Callback invoke.
-    var selectedItemPosition: Int = RecyclerView.NO_POSITION;
+    private var _selectedItemPosition: Int = RecyclerView.NO_POSITION;
+    val selectedItemPosition: Int
+        get() = _selectedItemPosition
 
     // selectedItem: set by item clicked; observer by editText, buttons.
     private var _selectedItem: MutableLiveData<Book?> = MutableLiveData(null)
@@ -61,8 +63,19 @@ class BooksViewModel(
      */
     fun selectBookByPosition(position: Int) {
         Log.i(TAG, "select position: $position")
-        this.selectedItemPosition = position        // remember the position, used by UpdateButton OnClick.
+        this._selectedItemPosition = position        // remember the position, used by UpdateButton OnClick.
         this._selectedItem.value = books.value?.get(position)
+    }
+
+
+    /** query books with user input as search condition. */
+    fun searchBooks(title: String?, price: Double?) {
+        Thread {
+            _books.postValue(dataSource.getBooks(title, price))
+            Log.i(TAG, "searchBooks: ${books.value}")
+        }.start()
+
+        resetSelectedItem()     // !!NOTE: Cannot invoke setValue on a background thread.
     }
 
 
@@ -105,17 +118,9 @@ class BooksViewModel(
 
     /** reset selected item */
     private fun resetSelectedItem() {
-        selectedItemPosition = RecyclerView.NO_POSITION
+        _selectedItemPosition = RecyclerView.NO_POSITION
         _selectedItem.value = null
     }
-
-    fun getBooks(title: String?, price: Double?): Unit {
-        Thread {
-            _books.postValue(dataSource.getBooks(title, price))
-            Log.i(TAG, "getBooks: ${books.value}")
-        }.start()
-    }
-
 
     /////////////////////////////////////////////////////// ViewModel Factory:
     class BooksViewModelFactory(
