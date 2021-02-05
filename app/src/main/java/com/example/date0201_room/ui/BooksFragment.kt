@@ -154,8 +154,18 @@ class BooksFragment : Fragment(R.layout.fragment_books) {
         // Query
         btnQuery = view.findViewById<Button>(R.id.btnQuery)
         btnQuery.setOnClickListener {
-            val books = viewModel.books
-            books.value?.let { updateBooksAdapter(it) }
+//            val books = viewModel.books
+            val title: String? = edtTitle.text.toString().trim()
+            val p = edtPrice.text.toString()
+            val price: Double? = if (p.isNullOrEmpty()) {
+                null
+            } else {
+                p.toDouble()
+            }
+            Log.i(TAG, "Query title: $title, price: $price")
+
+            val books = viewModel.getBooks(title, price)
+            updateBooksAdapter(books)
         }
     } // end initViews()
 

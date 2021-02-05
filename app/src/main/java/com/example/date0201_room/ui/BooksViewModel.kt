@@ -109,6 +109,11 @@ class BooksViewModel(
         _selectedItem.value = null
     }
 
+    fun getBooks(title: String?, price: Double?): List<Book> {
+        val books = dataSource.getBooks(title, price)
+        return books
+    }
+
 
     /////////////////////////////////////////////////////// ViewModel Factory:
     class BooksViewModelFactory(
