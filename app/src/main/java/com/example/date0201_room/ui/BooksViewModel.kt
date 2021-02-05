@@ -25,7 +25,8 @@ class BooksViewModel(
     val TAG = "[TAG]-${BooksViewModel::class.simpleName}"
 
     // books: from Room Database; observer by listAdapter.
-    val books: LiveData<List<Book>> = dataSource.getAllBooks()
+//    val books: LiveData<List<Book>> = dataSource.getAllBooks()
+    val books: LiveData<List<Book>> = dataSource.getBooks()
 
     // select item position at adapter; used by UpdateButton OnClick.
     // source from Adapter.ViewHolder Callback invoke.
