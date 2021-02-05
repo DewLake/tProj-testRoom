@@ -81,7 +81,6 @@ class BooksViewModel(
         viewModelScope.launch {
             Log.i(TAG, "update book: ${book.id}")
             dataSource.update(book)
-            resetSelectedItem()
         }
     }
 
@@ -91,7 +90,6 @@ class BooksViewModel(
         viewModelScope.launch {
             Log.i(TAG, "delete all books...")
             dataSource.deleteAll()
-            resetSelectedItem()
         }
     }
 
@@ -100,12 +98,11 @@ class BooksViewModel(
         viewModelScope.launch {
             Log.i(TAG, "delete book: ${book.id} ...")
             dataSource.delete(book)
-            resetSelectedItem()
         }
     }
 
     /** reset selected item */
-    private fun resetSelectedItem() {
+    fun resetSelectedItem() {
         selectedItemPosition = RecyclerView.NO_POSITION
         _selectedItem.value = null
     }

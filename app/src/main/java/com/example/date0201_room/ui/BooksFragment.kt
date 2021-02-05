@@ -90,6 +90,7 @@ class BooksFragment : Fragment(R.layout.fragment_books) {
             // Buttons enable state
             btnDelete.isEnabled = (book != null)
             btnUpdate.isEnabled = (book != null)
+            btnAdd.isEnabled = (book == null)
         })
 
     } // end onViewCreated().
@@ -132,7 +133,10 @@ class BooksFragment : Fragment(R.layout.fragment_books) {
         btnDelete.setOnClickListener {
 //            viewModel.deleteAllBooks()
             viewModel.selectedItem.value?.let {
+                // delete book
                 viewModel.delete(it)
+
+                resetSelectedItem()
             }
         }
 
@@ -151,7 +155,7 @@ class BooksFragment : Fragment(R.layout.fragment_books) {
 //                (rcvBooks.adapter as BooksAdapter).data = viewModel.books.value?.toList()!!
 //                viewModel.books.value = viewModel.books.value?.toList()
 //                rcvBooks.adapter?.notifyDataSetChanged()
-                rcvBooks.adapter?.notifyItemChanged(viewModel.selectedItemPosition)
+                resetSelectedItem()
 
                 // hide keyboard
                 hideKeyboard(view)
@@ -166,13 +170,17 @@ class BooksFragment : Fragment(R.layout.fragment_books) {
             val (title: String?, price: Double?) = grabUserInput()
             Log.i(TAG, "Query title: $title, price: $price")
 
-            val books = viewModel.searchBooks(title, price)
-            viewModel.books.value?.let { books -> updateBooksAdapter(books) }
+            // query books
+            viewModel.searchBooks(title, price)
+            viewModel.books.value?.let { books -> displayBooks(books) }
+
+            resetSelectedItem()
 
             // hide keyboard
             hideKeyboard(view)
         }
     } // end initViews()
+
 
     /** grab user input */
     private fun grabUserInput(): Pair<String, Double?> {
@@ -207,7 +215,16 @@ class BooksFragment : Fragment(R.layout.fragment_books) {
     /**
      *
      */
-    private fun updateBooksAdapter(books: List<Book>) {
+    private fun displayBooks(books: List<Book>) {
         booksAdapter.submitList(books)
+    }
+
+
+    private fun resetSelectedItem() {
+        val (pos, item) = Pair(viewModel.selectedItemPosition, viewModel.selectedItem.value)
+        if (pos != RecyclerView.NO_POSITION || item != null) {
+            rcvBooks.adapter?.notifyItemChanged(viewModel.selectedItemPosition)
+            viewModel.resetSelectedItem()
+        }
     }
 } // end class BooksFragment.
