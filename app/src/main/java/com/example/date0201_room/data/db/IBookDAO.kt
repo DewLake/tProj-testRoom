@@ -9,11 +9,16 @@ import com.example.date0201_room.data.Book
 @Dao
 interface IBookDAO {
 
+    /** 取得所有 Books */
     @Query("SELECT * FROM ${Book.TABLE_NAME} ORDER BY id DESC")
     fun getAllBooks(): LiveData<List<Book>>
+//    @Query("SELECT * FROM table_books WHERE (:title IS NULL OR title Like '%' || :title || '%') AND (:price IS NULL OR price = :price) ORDER By id DESC ")
+//    fun getAllBooks(title: String? = null, price: Double? = null): LiveData<List<Book>>
 
+    /** 查詢, 可條件式查詢 */
     @Query("SELECT * FROM table_books WHERE (:title IS NULL OR title Like '%' || :title || '%') AND (:price IS NULL OR price = :price) ORDER By id DESC ")
-    fun getBooks(title: String? = null, price: Double? = null): List<Book>
+    suspend fun getBooks(title: String? = null, price: Double? = null): List<Book>
+//    fun getBooks(title: String? = null, price: Double? = null): List<Book>
 //@Query("SELECT * FROM table_books WHERE (:title IS NULL OR title Like '%' || :title || '%') AND (:price IS NULL OR price = :price) ORDER By id DESC ")
 //fun getBooks(title: String? = "u", price: Double? = 10.0): List<Book>
 

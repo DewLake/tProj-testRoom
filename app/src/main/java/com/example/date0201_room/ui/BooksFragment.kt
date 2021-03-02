@@ -46,18 +46,34 @@ class BooksFragment : Fragment(R.layout.fragment_books) {
     private lateinit var booksAdapter: BooksAdapter
 
 
-    /** */
+    /** onCreateView */
     override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View? {
-        // initialize ViewMOdel
-        initViewModel()
 
         // View
         return super.onCreateView(inflater, container, savedInstanceState)
     }
+
+
+    /** onViewCreated */
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        // initialize ViewMOdel
+        initViewModel()
+
+
+        // Initialize Views
+        initViews(view)
+
+        // Observers subscribe
+        configObservers()
+
+    } // end onViewCreated().
+
 
     /** initialize ViewModel */
     private fun initViewModel() {
@@ -75,46 +91,56 @@ class BooksFragment : Fragment(R.layout.fragment_books) {
     } // end initViewModel().
 
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    /** Observers subscribe */
+    private fun configObservers() {
+        // selected (Adapter) position, 已點選的位置
+        viewModel.selectedItemPosition.observe(viewLifecycleOwner, { position ->
+            Log.d(TAG, "position: ${booksAdapter.previousIndex} --> $position")
+            booksAdapter.notifyItemChanged(booksAdapter.previousIndex)  // (通知)已取消選取, 應要改變背景色
+            booksAdapter.notifyItemChanged(position)        // (通知)被選取, 應要改變背景色
+            booksAdapter.previousIndex = position           // 記錄新的位置
+        })
 
-        // Initialize Views
-        initViews(view)
-
-        // Observers subscribe
+        // selectedItem, 已點選的書本
         viewModel.selectedItem.observe(viewLifecycleOwner, Observer { book ->
             // EditText content
             edtTitle.setText(book?.title ?: "")
             edtPrice.setText(book?.price?.toString() ?: "")
 
             // Buttons enable state
-            btnDelete.isEnabled = (book != null)
-            btnUpdate.isEnabled = (book != null)
-            btnAdd.isEnabled = (book == null)
+            btnDelete.isEnabled = (book != null)        // 有點選書本時, 允許刪除
+            btnUpdate.isEnabled = (book != null)        // 有點選書本時, 允許更新
+            btnAdd.isEnabled = (book == null)           // 沒有點選晝本時才允許新增(因期用UI, 有點選時視為"更新"資料)
         })
 
-    } // end onViewCreated().
+        // books
+        viewModel.books.observe(viewLifecycleOwner, Observer {
+            Log.i(TAG, "adapter update")
+            it.let { booksAdapter.data = it }
+        })
+    } // end setObservers().
 
     /** initialize Views */
     private fun initViews(view: View) {
+        //
         edtTitle = view.findViewById(R.id.edtTitle__FragmentBooks)
         edtPrice = view.findViewById(R.id.edtPrice__FragmentBooks)
 
 
         /// RecyclerView, books list
         // adapter
-        booksAdapter = BooksAdapter { onItemClickCallback(it) }
+        booksAdapter = BooksAdapter { position: Int -> onItemClickCallback(position) }
         //
         rcvBooks = view.findViewById(R.id.rcvBooksList)
         rcvBooks.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = booksAdapter
         }
-
-        viewModel.books.observe(viewLifecycleOwner, Observer {
-            Log.i("Fra", "adapter update")
-            it.let { booksAdapter.data = it }
-        })
+//
+//        viewModel.books.observe(viewLifecycleOwner, Observer {
+//            Log.i("Fra", "adapter update")
+//            it.let { booksAdapter.data = it }
+//        })
 
 
         /// Buttons
@@ -136,7 +162,7 @@ class BooksFragment : Fragment(R.layout.fragment_books) {
                 // delete book
                 viewModel.delete(it)
 
-                resetSelectedItem()
+//                resetSelectedItem()
             }
         }
 
@@ -155,7 +181,7 @@ class BooksFragment : Fragment(R.layout.fragment_books) {
 //                (rcvBooks.adapter as BooksAdapter).data = viewModel.books.value?.toList()!!
 //                viewModel.books.value = viewModel.books.value?.toList()
 //                rcvBooks.adapter?.notifyDataSetChanged()
-                resetSelectedItem()
+//                resetSelectedItem()
 
                 // hide keyboard
                 hideKeyboard(view)
@@ -170,11 +196,12 @@ class BooksFragment : Fragment(R.layout.fragment_books) {
             val (title: String?, price: Double?) = grabUserInput()
             Log.i(TAG, "Query title: $title, price: $price")
 
-            // query books
+//            // query books
+//            viewModel.searchBooks(title, price)
+//            viewModel.books.value?.let { books -> displayBooks(books) }
             viewModel.searchBooks(title, price)
-            viewModel.books.value?.let { books -> displayBooks(books) }
 
-            resetSelectedItem()
+//            resetSelectedItem()
 
             // hide keyboard
             hideKeyboard(view)
@@ -207,9 +234,12 @@ class BooksFragment : Fragment(R.layout.fragment_books) {
      * 選定項目 - ViewModel set selectedItem
      */
     private fun onItemClickCallback(position: Int) {
-        if (position != RecyclerView.NO_POSITION) {
-            viewModel.selectBookByPosition(position)
-        }
+        viewModel.updateSelectedItem(position)
+//        selectedItemPosition = position
+//
+//        if (position != RecyclerView.NO_POSITION) {
+//            viewModel.selectBookByPosition(position)
+//        }
     }
 
     /**
@@ -220,11 +250,11 @@ class BooksFragment : Fragment(R.layout.fragment_books) {
     }
 
 
-    private fun resetSelectedItem() {
-        val (pos, item) = Pair(viewModel.selectedItemPosition, viewModel.selectedItem.value)
-        if (pos != RecyclerView.NO_POSITION || item != null) {
-            rcvBooks.adapter?.notifyItemChanged(viewModel.selectedItemPosition)
-            viewModel.resetSelectedItem()
-        }
-    }
+//    private fun resetSelectedItem() {
+//        val (pos, item) = Pair(viewModel.selectedItemPosition, viewModel.selectedItem.value)
+//        if (pos != RecyclerView.NO_POSITION || item != null) {
+//            rcvBooks.adapter?.notifyItemChanged(viewModel.selectedItemPosition)
+//            viewModel.resetSelectedItem()
+//        }
+//    }
 } // end class BooksFragment.
