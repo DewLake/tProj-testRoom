@@ -1,4 +1,4 @@
-package com.example.date0201_room.ui
+package com.example.date0201_room.ui.local
 
 import android.app.Activity
 import android.os.Bundle
@@ -18,13 +18,18 @@ import com.example.date0201_room.R
 import com.example.date0201_room.data.Book
 import com.example.date0201_room.data.FetchRandomBook
 import com.example.date0201_room.data.db.BookDatabase
+import com.example.date0201_room.util.setupClearButtonWithAction
 
 
 class BooksFragment : Fragment(R.layout.fragment_books) {
     // TAG
     val TAG = "$[TAG]-${BooksFragment::class.simpleName}"
 
-    // Views
+    // ViewModel
+    private lateinit var viewModel: BooksViewModel
+
+
+    ///// Views
     // Texts
     private lateinit var edtTitle: EditText
     private lateinit var edtPrice: EditText
@@ -35,22 +40,18 @@ class BooksFragment : Fragment(R.layout.fragment_books) {
     private lateinit var btnUpdate: Button
     private lateinit var btnQuery: Button
 
+    // BooksAdapter
+    private lateinit var booksAdapter: BooksAdapter
+
     // RecyclerView
     private lateinit var rcvBooks: RecyclerView
 
 
-    // ViewModel
-    private lateinit var viewModel: BooksViewModel
-
-    // BooksAdapter
-    private lateinit var booksAdapter: BooksAdapter
-
-
     /** onCreateView */
     override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View? {
 
         // View
@@ -62,15 +63,16 @@ class BooksFragment : Fragment(R.layout.fragment_books) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // initialize ViewMOdel
-        initViewModel()
+        Log.d(TAG, "onViewCreated: $this")
 
+        // initialize ViewModel
+        initViewModel()
 
         // Initialize Views
         initViews(view)
 
         // Observers subscribe
-        configObservers()
+        setUpObservers()
 
     } // end onViewCreated().
 
@@ -91,56 +93,30 @@ class BooksFragment : Fragment(R.layout.fragment_books) {
     } // end initViewModel().
 
 
-    /** Observers subscribe */
-    private fun configObservers() {
-        // selected (Adapter) position, 已點選的位置
-        viewModel.selectedItemPosition.observe(viewLifecycleOwner, { position ->
-            Log.d(TAG, "position: ${booksAdapter.previousIndex} --> $position")
-            booksAdapter.notifyItemChanged(booksAdapter.previousIndex)  // (通知)已取消選取, 應要改變背景色
-            booksAdapter.notifyItemChanged(position)        // (通知)被選取, 應要改變背景色
-            booksAdapter.previousIndex = position           // 記錄新的位置
-        })
-
-        // selectedItem, 已點選的書本
-        viewModel.selectedItem.observe(viewLifecycleOwner, Observer { book ->
-            // EditText content
-            edtTitle.setText(book?.title ?: "")
-            edtPrice.setText(book?.price?.toString() ?: "")
-
-            // Buttons enable state
-            btnDelete.isEnabled = (book != null)        // 有點選書本時, 允許刪除
-            btnUpdate.isEnabled = (book != null)        // 有點選書本時, 允許更新
-            btnAdd.isEnabled = (book == null)           // 沒有點選晝本時才允許新增(因期用UI, 有點選時視為"更新"資料)
-        })
-
-        // books
-        viewModel.books.observe(viewLifecycleOwner, Observer {
-            Log.i(TAG, "adapter update")
-            it.let { booksAdapter.data = it }
-        })
-    } // end setObservers().
 
     /** initialize Views */
     private fun initViews(view: View) {
         //
         edtTitle = view.findViewById(R.id.edtTitle__FragmentBooks)
+        edtTitle.setupClearButtonWithAction()
         edtPrice = view.findViewById(R.id.edtPrice__FragmentBooks)
+        edtPrice.setupClearButtonWithAction()
 
 
         /// RecyclerView, books list
         // adapter
-        booksAdapter = BooksAdapter { position: Int -> onItemClickCallback(position) }
-        //
+        booksAdapter = BooksAdapter()
+        booksAdapter.onItemClickCallback = { item ->
+            Log.d(TAG, "CallbackFun: ${item.book.id}")
+            viewModel.setupSelectedItem(item)
+        }
+
+        // recycler view.
         rcvBooks = view.findViewById(R.id.rcvBooksList)
         rcvBooks.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = booksAdapter
         }
-//
-//        viewModel.books.observe(viewLifecycleOwner, Observer {
-//            Log.i("Fra", "adapter update")
-//            it.let { booksAdapter.data = it }
-//        })
 
 
         /// Buttons
@@ -149,7 +125,7 @@ class BooksFragment : Fragment(R.layout.fragment_books) {
         btnAdd.setOnClickListener {
             Log.i(TAG, "btnAdd clicked...")
 
-            val book = FetchRandomBook()
+            val book = grabBook()
 
             viewModel.addBook(book)
         }
@@ -159,17 +135,16 @@ class BooksFragment : Fragment(R.layout.fragment_books) {
         btnDelete.setOnClickListener {
 //            viewModel.deleteAllBooks()
             viewModel.selectedItem.value?.let {
-                // delete book
+                // delete item
                 viewModel.delete(it)
-
-//                resetSelectedItem()
             }
         }
 
         // Update
         btnUpdate = view.findViewById<Button>(R.id.btnUpdate)
         btnUpdate.setOnClickListener {
-            viewModel.selectedItem.value?.let { book ->
+            viewModel.selectedItem.value?.let { item ->
+                val book = item.book
 
                 // get user input
                 val (title: String, price: Double?) = grabUserInput()
@@ -178,10 +153,6 @@ class BooksFragment : Fragment(R.layout.fragment_books) {
 
                 // update book
                 viewModel.update(book)
-//                (rcvBooks.adapter as BooksAdapter).data = viewModel.books.value?.toList()!!
-//                viewModel.books.value = viewModel.books.value?.toList()
-//                rcvBooks.adapter?.notifyDataSetChanged()
-//                resetSelectedItem()
 
                 // hide keyboard
                 hideKeyboard(view)
@@ -192,7 +163,8 @@ class BooksFragment : Fragment(R.layout.fragment_books) {
         // Query
         btnQuery = view.findViewById<Button>(R.id.btnQuery)
         btnQuery.setOnClickListener {
-//            val books = viewModel.books
+
+            // 取得使用者輸入
             val (title: String?, price: Double?) = grabUserInput()
             Log.i(TAG, "Query title: $title, price: $price")
 
@@ -201,12 +173,53 @@ class BooksFragment : Fragment(R.layout.fragment_books) {
 //            viewModel.books.value?.let { books -> displayBooks(books) }
             viewModel.searchBooks(title, price)
 
-//            resetSelectedItem()
-
             // hide keyboard
             hideKeyboard(view)
         }
     } // end initViews()
+
+
+    /** Observers subscribe */
+    private fun setUpObservers() {
+        // Items
+        viewModel.items.observe(viewLifecycleOwner, Observer { list ->
+            Log.d(TAG, "adapter update")
+            booksAdapter.dataset = list
+        })
+
+
+        // selectedItem, 已點選的書本
+        viewModel.selectedItem.observe(viewLifecycleOwner, Observer { item ->
+            val isSelected = (item != null)
+
+            // Buttons enable state
+            btnDelete.isEnabled = isSelected        // 有點選書本時, 允許刪除
+            btnUpdate.isEnabled = isSelected        // 有點選書本時, 允許更新
+            btnAdd.isEnabled = (!isSelected)           // 沒有點選晝本時才允許新增(因共用UI, 有點選時視為"更新"資料)
+
+            // editText value
+            if (item != null) {
+                val book = item.book // EditText content
+                edtTitle.setText(book.title ?: "")
+                edtPrice.setText(book.price.toString())
+
+                // 觸發背景色設定
+                booksAdapter.notifyDataSetChanged()
+            }
+        })
+
+    } // end setObservers().
+
+    /** 取得 Book to add */
+    private fun grabBook(): Book {
+        val (title, price) = grabUserInput()
+
+        return if (title.isEmpty() || price == null) {
+            FetchRandomBook()
+        } else {
+            Book(title = title, price = price)
+        }
+    }
 
 
     /** grab user input */
@@ -223,38 +236,9 @@ class BooksFragment : Fragment(R.layout.fragment_books) {
 
     /** hide keyboard */
     private fun hideKeyboard(view: View) {
-        val imm: InputMethodManager = requireContext().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        val imm: InputMethodManager =
+            requireContext().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(view.windowToken, 0)
     }
 
-
-    /**
-     * onItemClickCallback
-     * Books list item 被按下時執行此方法
-     * 選定項目 - ViewModel set selectedItem
-     */
-    private fun onItemClickCallback(position: Int) {
-        viewModel.updateSelectedItem(position)
-//        selectedItemPosition = position
-//
-//        if (position != RecyclerView.NO_POSITION) {
-//            viewModel.selectBookByPosition(position)
-//        }
-    }
-
-    /**
-     *
-     */
-    private fun displayBooks(books: List<Book>) {
-        booksAdapter.submitList(books)
-    }
-
-
-//    private fun resetSelectedItem() {
-//        val (pos, item) = Pair(viewModel.selectedItemPosition, viewModel.selectedItem.value)
-//        if (pos != RecyclerView.NO_POSITION || item != null) {
-//            rcvBooks.adapter?.notifyItemChanged(viewModel.selectedItemPosition)
-//            viewModel.resetSelectedItem()
-//        }
-//    }
 } // end class BooksFragment.

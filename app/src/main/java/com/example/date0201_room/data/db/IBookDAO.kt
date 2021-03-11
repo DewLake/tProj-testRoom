@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.room.*
 import com.example.date0201_room.data.Book
+import kotlinx.coroutines.flow.Flow
 
 
 @Dao
@@ -21,6 +22,16 @@ interface IBookDAO {
 //    fun getBooks(title: String? = null, price: Double? = null): List<Book>
 //@Query("SELECT * FROM table_books WHERE (:title IS NULL OR title Like '%' || :title || '%') AND (:price IS NULL OR price = :price) ORDER By id DESC ")
 //fun getBooks(title: String? = "u", price: Double? = 10.0): List<Book>
+
+    /**
+     * 取得所有 Books
+     *  return type: flow<List<Book>>
+     */
+//    @Query("SELECT * FROM ${Book.TABLE_NAME} ORDER BY id DESC")
+//    fun getBooksFlow(): Flow<List<Book>>
+    @Query("SELECT * FROM table_books WHERE (:title IS NULL OR title Like '%' || :title || '%') AND (:price IS NULL OR price = :price) ORDER By id DESC ")
+    fun getBooksFlow(title: String? = null, price: Double? = null): Flow<List<Book>>
+
 
     @Query("SELECT * FROM ${Book.TABLE_NAME} WHERE id LIKE :id LIMIT 1")
     suspend fun getBookById(id: Long): Book
